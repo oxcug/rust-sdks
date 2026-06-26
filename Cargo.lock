@@ -3924,6 +3924,7 @@ dependencies = [
  "bmrng",
  "bytes",
  "chrono",
+ "flate2",
  "futures-util",
  "http 1.4.0",
  "lazy_static",
