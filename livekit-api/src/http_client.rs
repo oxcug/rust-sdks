@@ -12,27 +12,15 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#[cfg(any(feature = "services-tokio", feature = "signal-client-tokio"))]
+#[cfg(feature = "services-tokio")]
 mod tokio {
-    #[cfg(feature = "services-tokio")]
     pub use reqwest::Client;
-
-    /// GET with an `Authorization: Bearer <token>` header attached.
-    ///
-    /// `reqwest::get(url)` (the free function) constructs a fresh default
-    /// `Client` and attaches no auth, which is why `SignalInner::validate` —
-    /// the sole caller — uses this helper: the access token must reach the
-    /// server or the server returns 401 regardless of the underlying error.
-    #[cfg(feature = "signal-client-tokio")]
-    pub async fn get_with_token(url: &str, token: &str) -> reqwest::Result<reqwest::Response> {
-        reqwest::Client::new().get(url).bearer_auth(token).send().await
-    }
 }
 
-#[cfg(any(feature = "services-tokio", feature = "signal-client-tokio"))]
+#[cfg(feature = "services-tokio")]
 pub use tokio::*;
 
-#[cfg(any(feature = "__signal-client-async-compatible", feature = "services-async"))]
+#[cfg(feature = "services-async")]
 mod async_std {
 
     #[cfg(any(
@@ -43,47 +31,8 @@ mod async_std {
     ))]
     compile_error!("the async std compatible libraries do not support these features");
 
-    #[cfg(any(feature = "__signal-client-async-compatible", feature = "services-async"))]
     pub struct Response(http::Response<isahc::AsyncBody>);
 
-    #[cfg(feature = "__signal-client-async-compatible")]
-    mod signal_client {
-        use std::io;
-
-        use isahc::AsyncReadResponseExt;
-
-        use super::Response;
-
-        impl Response {
-            pub fn status(&self) -> http::StatusCode {
-                self.0.status()
-            }
-
-            pub async fn text(mut self) -> io::Result<String> {
-                self.0.text().await
-            }
-        }
-
-        /// GET with an `Authorization: Bearer <token>` header attached.
-        ///
-        /// `isahc::get_async(url)` attaches no auth, which is why
-        /// `SignalInner::validate` — the sole caller — uses this helper: the
-        /// access token must reach the server or the server returns 401
-        /// regardless of the underlying error. Mirrors the tokio variant.
-        pub async fn get_with_token(url: &str, token: &str) -> io::Result<Response> {
-            let request = isahc::Request::get(url)
-                .header("Authorization", format!("Bearer {}", token))
-                .body(())
-                .map_err(|e| io::Error::new(io::ErrorKind::Other, e))?;
-            let response = isahc::send_async(request).await?;
-            Ok(Response(response))
-        }
-    }
-
-    #[cfg(feature = "__signal-client-async-compatible")]
-    pub use signal_client::*;
-
-    #[cfg(feature = "services-async")]
     mod services {
         use std::io;
 
@@ -177,9 +126,8 @@ mod async_std {
         }
     }
 
-    #[cfg(feature = "services-async")]
     pub use services::*;
 }
 
-#[cfg(any(feature = "__signal-client-async-compatible", feature = "services-async"))]
+#[cfg(feature = "services-async")]
 pub use async_std::*;
