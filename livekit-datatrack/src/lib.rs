@@ -67,3 +67,6 @@ pub mod backend {
 pub mod __fuzz {
     pub use crate::packet::{Extensions, FrameMarker, Handle, Header, Packet, Timestamp};
 }
+
+#[cfg(feature = "uniffi")]
+uniffi::setup_scaffolding!();
