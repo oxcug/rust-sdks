@@ -104,8 +104,6 @@ args="is_debug=$debug \
   rtc_build_tools=false \
   rtc_build_examples=false \
   rtc_libvpx_build_vp9=false \
-  enable_libaom=false \
-  rtc_include_dav1d_in_internal_decoder_factory=false \
   is_component_build=false \
   enable_stripping=true \
   rtc_use_h264=false \
