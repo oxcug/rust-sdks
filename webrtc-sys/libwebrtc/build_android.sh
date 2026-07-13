@@ -105,10 +105,12 @@ args="is_debug=$debug \
   rtc_build_tools=false \
   rtc_build_examples=false \
   rtc_libvpx_build_vp9=false \
+  enable_libaom=false \
+  rtc_include_dav1d_in_internal_decoder_factory=false \
   is_component_build=false \
   enable_stripping=true \
   rtc_use_h264=false \
-  rtc_use_h265=true \
+  rtc_use_h265=false \
   rtc_use_pipewire=false \
   symbol_level=0 \
   enable_iterator_debugging=false \
